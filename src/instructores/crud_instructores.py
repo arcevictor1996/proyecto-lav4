@@ -1,5 +1,7 @@
 from prettytable import PrettyTable
 from ..database.conexion import conectar
+from ..utils.utils import error_rojo
+
 
 # Funciones de validación
 def validar_entrada_entero(mensaje, min_valor=1):
@@ -10,7 +12,10 @@ def validar_entrada_entero(mensaje, min_valor=1):
                 raise ValueError(f"El valor debe ser mayor o igual a {min_valor}.")
             return valor
         except ValueError as e:
-            print(f"Entrada no válida: {e}")
+            error_rojo(
+                f"Entrada no válida: {e}. Se esperaba un número mayor o igual a {min_valor}."
+            )
+
 
 def validar_entrada_cadena(mensaje):
     while True:
@@ -18,7 +23,10 @@ def validar_entrada_cadena(mensaje):
         if entrada:
             return entrada
         else:
-            print("La entrada no puede estar vacía.")
+            error_rojo(
+                "La entrada no puede estar vacía. Por favor, ingrese un valor válido."
+            )
+
 
 # Funciones CRUD de Instructores
 def crear_instructor():
@@ -33,10 +41,13 @@ def crear_instructor():
         conn.commit()
         print("Instructor creado correctamente.")
     except Exception as e:
-        print(f"Error al crear el instructor: {e}")
+        error_rojo(
+            f"Error al crear el instructor: {e}. Puede deberse a un problema de conexión o a una entrada de datos duplicada."
+        )
     finally:
         cursor.close()
         conn.close()
+
 
 def leer_instructores():
     try:
@@ -53,15 +64,18 @@ def leer_instructores():
         # Añadir las filas con los datos de los instructores
         for instructor in instructores:
             tabla.add_row(instructor)
-        
+
         # Imprimir la tabla
         print("\nListado de Instructores:")
         print(tabla)
     except Exception as e:
-        print(f"Error al leer instructores: {e}")
+        error_rojo(
+            f"Error al leer instructores: {e}. Puede deberse a un problema de conexión o a que no existen registros."
+        )
     finally:
         cursor.close()
         conn.close()
+
 
 def actualizar_instructor():
     id_instructor = validar_entrada_entero("Ingrese el ID del instructor a modificar: ")
@@ -76,10 +90,13 @@ def actualizar_instructor():
         conn.commit()
         print("Instructor actualizado correctamente.")
     except Exception as e:
-        print(f"Error al actualizar el instructor: {e}")
+        error_rojo(
+            f"Error al actualizar el instructor: {e}. Puede deberse a un problema de conexión o a que el ID proporcionado no existe."
+        )
     finally:
         cursor.close()
         conn.close()
+
 
 def eliminar_instructor():
     id_instructor = validar_entrada_entero("Ingrese el ID del instructor a eliminar: ")
@@ -90,9 +107,15 @@ def eliminar_instructor():
         query = "DELETE FROM Instructores WHERE idInstructores=%s"
         cursor.execute(query, (id_instructor,))
         conn.commit()
-        print("Instructor eliminado correctamente.")
+
+        if cursor.rowcount == 0:
+            error_rojo("No se encontró ningún instructor con el ID proporcionado.")
+        else:
+            print("Instructor eliminado correctamente.")
     except Exception as e:
-        print(f"Error al eliminar el instructor: {e}")
+        error_rojo(
+            f"Error al eliminar el instructor: {e}. Puede deberse a un problema de conexión o a que el instructor está referenciado en otra tabla."
+        )
     finally:
         cursor.close()
         conn.close()

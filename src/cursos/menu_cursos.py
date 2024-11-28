@@ -1,4 +1,4 @@
-from src.utils.utils import limpiar_pantalla
+from src.utils.utils import limpiar_pantalla, error_rojo
 from .crud_cursos import (
     crear_curso,
     leer_cursos,
@@ -26,29 +26,33 @@ def obtener_opcion():
         if opcion in ["1", "2", "3", "4", "5"]:
             return opcion
         else:
-            print("\033[1;31mOpción no válida. Por favor, intente de nuevo.\033[0m")
+            error_rojo("Opción no válida. Por favor, intente de nuevo.")
 
 
 def menu_cursos():
     while True:
-        mostrar_menu_cursos()
-        opcion = obtener_opcion()
+        try:
+            mostrar_menu_cursos()
+            opcion = obtener_opcion()
 
-        if opcion == "1":
-            print("\033[1;34mCreando un nuevo Curso...\033[0m")
-            crear_curso()
-        elif opcion == "2":
-            print("\033[1;34mMostrando la lista de Cursos...\033[0m")
-            leer_cursos()
-        elif opcion == "3":
-            print("\033[1;34mActualizando un Curso...\033[0m")
-            actualizar_curso()
-        elif opcion == "4":
-            print("\033[1;34mEliminando un Curso...\033[0m")
-            eliminar_curso()
-        elif opcion == "5":
-            print("\033[1;32mVolviendo al Menú Principal...\033[0m")
-            break
-
+            if opcion == "1":
+                print("\033[1;34mCreando un nuevo Curso...\033[0m")
+                crear_curso()
+            elif opcion == "2":
+                print("\033[1;34mMostrando la lista de Cursos...\033[0m")
+                leer_cursos()
+            elif opcion == "3":
+                print("\033[1;34mActualizando un Curso...\033[0m")
+                actualizar_curso()
+            elif opcion == "4":
+                print("\033[1;34mEliminando un Curso...\033[0m")
+                eliminar_curso()
+            elif opcion == "5":
+                print("\033[1;32mVolviendo al Menú Principal...\033[0m")
+                break
+        except Exception as e:
+            error_rojo(
+                f"Ocurrió un error inesperado: {e}. Verifique su conexión o los datos ingresados."
+            )
     # Limpiar la pantalla al volver al menú principal
     limpiar_pantalla()

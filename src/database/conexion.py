@@ -17,7 +17,9 @@ def obtener_configuracion():
             ),  # valor por defecto 'DB_ACADEMIA'
         }
     except Exception as e:
-        print(f"Error al obtener la configuración: {e}")
+        print(
+            "\033[31mLa configuración de conexión a la base de datos no es válida.\033[0m"
+        )
         return None
 
 
@@ -28,7 +30,9 @@ def conectar():
     try:
         config = obtener_configuracion()
         if not config:
-            raise ValueError("La configuración de conexión no es válida.")
+            raise ValueError(
+                "\033[31mLa configuración de conexión a la base de datos no es válida.\033[0m"
+            )
 
         conexion = mysql.connector.connect(
             host=config["host"],
@@ -42,9 +46,9 @@ def conectar():
             return conexion
 
     except Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
+        print("\033[31mError al intentar entablar conexion a la base de datos.\033[0m")
     except Exception as e:
-        print(f"Error inesperado al intentar conectar: {e}")
+        print("\033[31mError al intentar entablar conexion a la base de datos.\033[0m")
     return None
 
 
@@ -57,6 +61,6 @@ def cerrar_conexion(conexion):
             conexion.close()
             print("Conexión cerrada.")
     except Error as e:
-        print(f"Error al cerrar la conexión: {e}")
+        print("\033[31mError al cerrar la conexion con la base de datos.\033[0m")
     except Exception as e:
-        print(f"Error inesperado al intentar cerrar la conexión: {e}")
+        print("\033[31mError al cerrar la conexion con la base de datos.\033[0m")

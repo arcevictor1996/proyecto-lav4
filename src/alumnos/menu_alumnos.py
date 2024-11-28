@@ -5,7 +5,7 @@ from .crud_alumnos import (
     eliminar_alumno,
 )
 
-from src.utils.utils import limpiar_pantalla
+from src.utils.utils import limpiar_pantalla, error_rojo
 
 
 def mostrar_menu_alumnos():
@@ -27,28 +27,33 @@ def obtener_opcion():
         if opcion in ["1", "2", "3", "4", "5"]:
             return opcion
         else:
-            print("\033[1;31mOpción no válida. Por favor, intente de nuevo.\033[0m")
+            error_rojo("Opción no válida. Por favor, intente de nuevo.")
 
 
 def menu_alumnos():
     while True:
-        mostrar_menu_alumnos()
-        opcion = obtener_opcion()
+        try:
+            mostrar_menu_alumnos()
+            opcion = obtener_opcion()
 
-        if opcion == "1":
-            print("\033[1;34mCreando un nuevo Alumno...\033[0m")
-            crear_alumno()
-        elif opcion == "2":
-            print("\033[1;34mMostrando la lista de Alumnos...\033[0m")
-            leer_alumnos()
-        elif opcion == "3":
-            print("\033[1;34mActualizando un Alumno...\033[0m")
-            actualizar_alumno()
-        elif opcion == "4":
-            print("\033[1;34mEliminando un Alumno...\033[0m")
-            eliminar_alumno()
-        elif opcion == "5":
-            print("\033[1;32mVolviendo al Menú Principal...\033[0m")
-            break
+            if opcion == "1":
+                print("\033[1;34mCreando un nuevo Alumno...\033[0m")
+                crear_alumno()
+            elif opcion == "2":
+                print("\033[1;34mMostrando la lista de Alumnos...\033[0m")
+                leer_alumnos()
+            elif opcion == "3":
+                print("\033[1;34mActualizando un Alumno...\033[0m")
+                actualizar_alumno()
+            elif opcion == "4":
+                print("\033[1;34mEliminando un Alumno...\033[0m")
+                eliminar_alumno()
+            elif opcion == "5":
+                print("\033[1;32mVolviendo al Menú Principal...\033[0m")
+                break
+        except Exception as e:
+            error_rojo(
+                f"Se produjo un error inesperado: {e}. Por favor, intente nuevamente."
+            )
     # Limpiar la pantalla al volver al menú principal
     limpiar_pantalla()
