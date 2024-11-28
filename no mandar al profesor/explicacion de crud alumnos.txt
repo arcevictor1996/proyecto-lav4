@@ -1,0 +1,142 @@
+1. Importaciones
+CODIGO:
+
+from prettytable import PrettyTable
+from ..database.conexion import conectar
+
+
+prettytable: Se utiliza para mostrar los resultados de las consultas a la base de datos en un formato de tabla bien organizado.
+conectar: Importa la función que establece la conexión con la base de datos. Se asume que la función conectar se encuentra en un módulo de base de datos y se usa para obtener la conexión a la base de datos.
+
+2. Funciones de validación
+Estas funciones son responsables de validar la entrada del usuario, asegurando que la información proporcionada cumpla con ciertos requisitos.
+
+validar_entrada_cadena: Solicita al usuario que ingrese una cadena de texto y verifica que tenga al menos una longitud mínima. Si no cumple con el requisito, se le pedirá que ingrese una nueva entrada.
+
+CODIGO:
+def validar_entrada_cadena(mensaje, min_length=1):
+    while True:
+        entrada = input(mensaje).strip()
+        if len(entrada) >= min_length:
+            return entrada
+        else:
+            print(f"La entrada debe tener al menos {min_length} caracteres.")
+validar_entrada_entero: Valida que la entrada sea un número entero mayor o igual a un valor mínimo.
+
+
+3. Funciones CRUD de Alumnos
+Las siguientes funciones implementan las operaciones CRUD (Crear, Leer, Actualizar y Eliminar) para la tabla de Alumnos.
+
+crear_alumno
+Esta función permite crear un nuevo alumno en la base de datos:
+
+Se solicita al usuario la entrada de varios campos, como nombre, apellido, teléfono, dirección y DNI, usando las funciones de validación.
+Luego se conecta a la base de datos y ejecuta un INSERT INTO para insertar los datos del nuevo alumno.
+ CODIGO:
+def crear_alumno():
+    nombre = validar_entrada_cadena("Ingrese nombre del alumno: ")
+    apellido = validar_entrada_cadena("Ingrese apellido del alumno: ")
+    telefono = input("Ingrese teléfono del alumno: ")
+    direccion = input("Ingrese dirección del alumno: ")
+    dni = validar_entrada_dni("Ingrese DNI del alumno: ")
+
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = "INSERT INTO Alumnos (Nombre, Apellido, Telefono, Direccion, DNI) VALUES (%s, %s, %s, %s, %s)"
+        cursor.execute(query, (nombre, apellido, telefono, direccion, dni))
+        conn.commit()
+        print("Alumno creado correctamente.")
+    except Exception as e:
+        print(f"Error al crear el alumno: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+leer_alumnos
+Esta función lee todos los alumnos registrados en la base de datos:
+
+Se realiza una consulta SQL para seleccionar todos los registros de la tabla Alumnos.
+Los resultados se almacenan en una lista de tuplas que luego se procesan para mostrarlos en una tabla formateada usando PrettyTable.
+
+CODIGO:
+
+def leer_alumnos():
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = "SELECT * FROM Alumnos"
+        cursor.execute(query)
+        alumnos = cursor.fetchall()
+
+        # Crear la tabla con encabezados
+        tabla = PrettyTable()
+        tabla.field_names = ["Legajo", "Apellido", "Nombre", "Teléfono", "Dirección", "DNI"]
+
+        # Añadir las filas con los datos de los alumnos
+        for alumno in alumnos:
+            tabla.add_row(alumno)
+
+        # Imprimir la tabla
+        print("\nListado de Alumnos:")
+        print(tabla)
+
+    except Exception as e:
+        print(f"Error al leer alumnos: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+actualizar_alumno
+Esta función permite actualizar los datos de un alumno ya existente:
+
+Se solicita al usuario que ingrese el legajo del alumno que desea actualizar, y luego se le pide que ingrese los nuevos datos.
+La función realiza un UPDATE en la base de datos para modificar los valores del alumno en la tabla Alumnos.
+CODIGO:
+
+def actualizar_alumno():
+    legajo = validar_entrada_entero("Ingrese el legajo del alumno a modificar: ")
+    nombre = validar_entrada_cadena("Nuevo nombre del alumno: ")
+    apellido = validar_entrada_cadena("Nuevo apellido del alumno: ")
+    telefono = input("Nuevo teléfono del alumno: ")
+    direccion = input("Nueva dirección del alumno: ")
+    dni = validar_entrada_dni("Nuevo DNI del alumno: ")
+
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = "UPDATE Alumnos SET Nombre=%s, Apellido=%s, Telefono=%s, Direccion=%s, DNI=%s WHERE Legajo=%s"
+        cursor.execute(query, (nombre, apellido, telefono, direccion, dni, legajo))
+        conn.commit()
+        print("Alumno actualizado correctamente.")
+    except Exception as e:
+        print(f"Error al actualizar el alumno: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+eliminar_alumno
+Esta función elimina un alumno de la base de datos según su legajo:
+
+Se pide al usuario que ingrese el legajo del alumno que desea eliminar.
+Luego se ejecuta una consulta DELETE para borrar al alumno de la tabla Alumnos.
+
+CODIGO:
+def eliminar_alumno():
+    legajo = validar_entrada_entero("Ingrese el legajo del alumno a eliminar: ")
+
+    try:
+        conn = conectar()
+        cursor = conn.cursor()
+        query = "DELETE FROM Alumnos WHERE Legajo=%s"
+        cursor.execute(query, (legajo,))
+        conn.commit()
+        print("Alumno eliminado correctamente.")
+    except Exception as e:
+        print(f"Error al eliminar el alumno: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+Resumen de lo que hace el código:
+Entrada y validación: Utiliza funciones de validación para asegurar que los datos ingresados por el usuario sean correctos y cumplan con ciertos criterios.
+Operaciones CRUD: Implementa las operaciones de creación, lectura, actualización y eliminación de los registros de los alumnos en la base de datos.
+Interfaz de usuario: Muestra la información de manera estructurada usando PrettyTable para mejorar la legibilidad de los datos cuando se consultan los alumnos.
+Este código es útil para gestionar los datos de los alumnos en una base de datos con un enfoque interactivo, permitiendo al usuario agregar, modificar, ver y eliminar registros de alumnos.

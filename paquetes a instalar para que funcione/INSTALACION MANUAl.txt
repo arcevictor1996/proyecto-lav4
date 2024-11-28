@@ -1,0 +1,2 @@
+en CMD COMO ADMINISTRADOR
+pip install prettytable mysql-connector-python
