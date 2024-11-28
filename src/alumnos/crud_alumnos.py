@@ -1,53 +1,88 @@
 from prettytable import PrettyTable
 from ..database.conexion import conectar
 
-# Funciones de validación
-def validar_entrada_cadena(mensaje, min_length=1):
-    while True:
-        entrada = input(mensaje).strip()
-        if len(entrada) >= min_length:
-            return entrada
-        else:
-            print(f"La entrada debe tener al menos {min_length} caracteres.")
-
-def validar_entrada_entero(mensaje, min_valor=1):
+#Validaciones para los datos
+def validar_nombre(campo, tipo):
     while True:
         try:
-            valor = int(input(mensaje))
-            if valor < min_valor:
-                raise ValueError(f"El valor debe ser mayor o igual a {min_valor}.")
-            return valor
+            if not campo.isalpha():
+                raise ValueError(f"El {tipo} debe contener solo letras.")
+            return campo
         except ValueError as e:
-            print(f"Entrada no válida: {e}")
+            print(f"Error: {e}")
+            campo = input(f"Ingrese un {tipo} válido: ")
 
-def validar_entrada_dni(mensaje):
+def validar_apellido(campo, apellido):
     while True:
-        dni = input(mensaje).strip()
-        if len(dni) == 8 and dni.isdigit():
+        try:
+            if not campo.isalpha():
+                raise ValueError(f"El {apellido} debe contener solo letras.")
+            return campo
+        except ValueError as e:
+            print(f"Error: {e}")
+            campo = input(f"Ingrese un {apellido} válido: ")
+
+def validar_telefono(telefono):
+    while True:
+        try:
+            if not telefono.isdigit():
+                raise ValueError("El teléfono debe contener solo números.")
+            return telefono
+        except ValueError as e:
+            print(f"Error: {e}")
+            telefono = input("Ingrese un teléfono válido: ")
+
+def validar_dni(dni):
+    while True:
+        try:
+            if not dni.isdigit() or len(dni) != 8:
+                raise ValueError("El DNI debe ser un número de 8 dígitos.")
             return dni
-        else:
-            print("DNI inválido. Debe tener 8 dígitos numéricos.")
+        except ValueError as e:
+            print(f"Error: {e}")
+            dni = input("Ingrese un DNI válido: ")
 
-# Funciones CRUD de Alumnos
+def validar_direccion(direccion):
+    while True:
+        try:
+            if len(direccion.strip()) == 0:
+                raise ValueError("La dirección no puede estar vacía.")
+            return direccion
+        except ValueError as e:
+            print(f"Error: {e}")
+            direccion = input("Ingrese una dirección válida: ")
+
+def validar_legajo(legajo):
+    while True:
+        try:
+            if not legajo.isdigit() or len(legajo) != 6:
+                raise ValueError("El legajo debe ser un número de 6 dígitos.")
+            return legajo
+        except ValueError as e:
+            print(f"Error: {e}")
+            legajo = input("Ingrese un legajo válido: ")
+
+#funcion crud: crear alumno
 def crear_alumno():
-    nombre = validar_entrada_cadena("Ingrese nombre del alumno: ")
-    apellido = validar_entrada_cadena("Ingrese apellido del alumno: ")
-    telefono = input("Ingrese teléfono del alumno: ")
-    direccion = input("Ingrese dirección del alumno: ")
-    dni = validar_entrada_dni("Ingrese DNI del alumno: ")
+    #solicitar y validar datos
+    nombre = validar_nombre(input("Ingrese nombre del alumno: "), "nombre")
+    apellido = validar_apellido(input("Ingrese apellido del alumno: "), "apellido")
+    telefono = validar_telefono(input("Ingrese teléfono del alumno: "))
+    direccion = validar_direccion(input("Ingrese dirección del alumno: "))
+    dni = validar_dni(input("Ingrese DNI del alumno: "))
 
-    try:
-        conn = conectar()
-        cursor = conn.cursor()
-        query = "INSERT INTO Alumnos (Nombre, Apellido, Telefono, Direccion, DNI) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(query, (nombre, apellido, telefono, direccion, dni))
-        conn.commit()
-        print("Alumno creado correctamente.")
-    except Exception as e:
-        print(f"Error al crear el alumno: {e}")
-    finally:
-        cursor.close()
-        conn.close()
+    #conexion y ejecución de consulta
+    conn = conectar()
+    cursor = conn.cursor()
+    query = """
+        INSERT INTO Alumnos (Nombre, apellido, Telefono, direccion, dni) 
+        VALUES (%s, %s, %s, %s, %s)
+    """
+    cursor.execute(query, (nombre, apellido, telefono, direccion, dni))
+    conn.commit()
+    print("Alumno creado correctamente.")
+    cursor.close()
+    conn.close()
 
 def leer_alumnos():
     try:
@@ -76,12 +111,12 @@ def leer_alumnos():
         conn.close()
 
 def actualizar_alumno():
-    legajo = validar_entrada_entero("Ingrese el legajo del alumno a modificar: ")
-    nombre = validar_entrada_cadena("Nuevo nombre del alumno: ")
-    apellido = validar_entrada_cadena("Nuevo apellido del alumno: ")
-    telefono = input("Nuevo teléfono del alumno: ")
-    direccion = input("Nueva dirección del alumno: ")
-    dni = validar_entrada_dni("Nuevo DNI del alumno: ")
+    legajo = validar_legajo("Ingrese el legajo del alumno a modificar: ")
+    nombre = validar_nombre("Nuevo nombre del alumno: ")
+    apellido = validar_apellido("Nuevo apellido del alumno: ")
+    telefono = validar_telefono(input("Nuevo teléfono del alumno: "))
+    direccion = validar_direccion(input("Nueva dirección del alumno: "))
+    dni = validar_dni("Nuevo DNI del alumno: ")
 
     try:
         conn = conectar()
@@ -97,17 +132,23 @@ def actualizar_alumno():
         conn.close()
 
 def eliminar_alumno():
-    legajo = validar_entrada_entero("Ingrese el legajo del alumno a eliminar: ")
+    legajo = validar_legajo("Ingrese el legajo del alumno a eliminar: ")
 
+    
     try:
         conn = conectar()
         cursor = conn.cursor()
         query = "DELETE FROM Alumnos WHERE Legajo=%s"
         cursor.execute(query, (legajo,))
         conn.commit()
-        print("Alumno eliminado correctamente.")
+
+        if cursor.rowcount == 0:
+            print("No se encontró ningún alumno con el legajo proporcionado.")
+        else:
+            print("Alumno eliminado correctamente.")
     except Exception as e:
         print(f"Error al eliminar el alumno: {e}")
+
     finally:
         cursor.close()
         conn.close()
