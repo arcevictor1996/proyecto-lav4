@@ -219,17 +219,37 @@ def actualizar_alumno():
 # Eliminar alumno
 def eliminar_alumno():
     legajo = validar_legajo(input("Ingrese el legajo del alumno a eliminar: "))
+
     try:
         conn = conectar()
         cursor = conn.cursor()
-        query = "DELETE FROM Alumnos WHERE Legajo=%s"
+        query = "SELECT * FROM Alumnos WHERE Legajo=%s"
         cursor.execute(query, (legajo,))
-        conn.commit()
+        alumno = cursor.fetchone()
 
-        if cursor.rowcount == 0:
-            print("No se encontró ningún alumno con el legajo proporcionado.")
+        if alumno:
+            print(
+                f"\nDatos del alumno a eliminar: Legajo: {alumno[0]}, Nombre: {alumno[1]}"
+            )
+
+            confirmar = (
+                input("¿Está seguro de que desea eliminar este alumno? (S/N): ")
+                .strip()
+                .upper()
+            )
+            if confirmar == "S":
+                query_delete = "DELETE FROM Alumnos WHERE Legajo=%s"
+                cursor.execute(query_delete, (legajo,))
+                conn.commit()
+
+                if cursor.rowcount == 0:
+                    print("No se encontró ningún alumno con el legajo proporcionado.")
+                else:
+                    print("Alumno eliminado correctamente.")
+            else:
+                print("Operación cancelada.")
         else:
-            print("Alumno eliminado correctamente.")
+            print("No se encontró ningún alumno con el legajo proporcionado.")
     except Exception as e:
         error_rojo(f"Error al eliminar el alumno: {e}")
     finally:

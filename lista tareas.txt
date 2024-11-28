@@ -1,4 +1,0 @@
-* arreglar actualizacion de instructores
-
-*arreglar actualizacion de cursos con el sig error
-Ocurrió un error inesperado: cannot access local variable 'cursor' where it is not associated with a value. Verifique su conexión o los datos ingresados.

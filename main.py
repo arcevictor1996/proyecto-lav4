@@ -1,4 +1,4 @@
-from src.utils.utils import limpiar_pantalla
+from src.utils.utils import limpiar_pantalla, error_rojo
 from src.alumnos.menu_alumnos import menu_alumnos
 from src.instructores.menu_instructores import menu_instructores
 from src.cursos.menu_cursos import menu_cursos
