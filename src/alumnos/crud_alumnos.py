@@ -4,22 +4,24 @@ from ..utils.utils import error_rojo
 
 
 # Validaciones para los datos
-def validar_nombre(campo, tipo):
+def validar_nombre(campo, apellido):
     while True:
         try:
-            if not campo.isalpha():
-                raise ValueError(f"El {tipo} debe contener solo letras.")
+            # Permitir letras y espacios
+            if not all(x.isalpha() or x.isspace() for x in campo):
+                raise ValueError(f"El {apellido} debe contener solo letras y espacios.")
             return campo
         except ValueError as e:
             error_rojo(f"Error: {e}")
-            campo = input(f"Ingrese un {tipo} válido: ")
+            campo = input(f"Ingrese un {apellido} válido: ")
 
 
 def validar_apellido(campo, apellido):
     while True:
         try:
-            if not campo.isalpha():
-                raise ValueError(f"El {apellido} debe contener solo letras.")
+            # Permitir letras y espacios
+            if not all(x.isalpha() or x.isspace() for x in campo):
+                raise ValueError(f"El {apellido} debe contener solo letras y espacios.")
             return campo
         except ValueError as e:
             error_rojo(f"Error: {e}")
@@ -62,8 +64,12 @@ def validar_direccion(direccion):
 def validar_legajo(legajo):
     while True:
         try:
-            if not legajo.isdigit() or len(legajo) != 6:
-                raise ValueError("El legajo debe ser un número de 6 dígitos.")
+            if not legajo.isdigit() or len(legajo) < 1:
+                raise ValueError("El legajo debe ser un número positivo.")
+            if (
+                len(legajo) > 3
+            ):  # Aseguramos que el legajo tenga al menos 4 dígitos (si aplica en tu caso)
+                raise ValueError("El legajo debe hasta 3 dígitos.")
             return legajo
         except ValueError as e:
             error_rojo(f"Error: {e}")
@@ -132,26 +138,77 @@ def leer_alumnos():
         conn.close()
 
 
-# Actualizar alumno
+# Función CRUD: Actualizar alumno
 def actualizar_alumno():
     legajo = validar_legajo(input("Ingrese el legajo del alumno a modificar: "))
-    nombre = validar_nombre(input("Nuevo nombre del alumno: "), "nombre")
-    apellido = validar_apellido(input("Nuevo apellido del alumno: "), "apellido")
-    telefono = validar_telefono(input("Nuevo teléfono del alumno: "))
-    direccion = validar_direccion(input("Nueva dirección del alumno: "))
-    dni = validar_dni(input("Nuevo DNI del alumno: "))
 
     try:
         conn = conectar()
         cursor = conn.cursor()
-        query = """
-            UPDATE Alumnos 
-            SET Nombre=%s, Apellido=%s, Telefono=%s, Direccion=%s, DNI=%s 
-            WHERE Legajo=%s
-        """
-        cursor.execute(query, (nombre, apellido, telefono, direccion, dni, legajo))
-        conn.commit()
-        print("Alumno actualizado correctamente.")
+
+        # Verificar si el legajo existe
+        query = "SELECT * FROM Alumnos WHERE Legajo=%s"
+        cursor.execute(query, (legajo,))
+        alumno = cursor.fetchone()
+
+        if alumno:
+            # El legajo existe, mostrar los datos actuales
+            print("\nDatos actuales del alumno:")
+            print(f"Nombre: {alumno[1]}")
+            print(f"Apellido: {alumno[2]}")
+            print(f"Teléfono: {alumno[3]}")
+            print(f"Dirección: {alumno[4]}")
+            print(f"DNI: {alumno[5]}")
+
+            # Solicitar los nuevos datos o dejar en blanco para mantener los actuales
+            nombre = validar_nombre(
+                input(
+                    f"Nuevo nombre del alumno (dejar vacío para mantener '{alumno[1]}'): "
+                )
+                or alumno[1],  # Si se deja vacío, mantiene el actual
+                "nombre",
+            )
+            apellido = validar_apellido(
+                input(
+                    f"Nuevo apellido del alumno (dejar vacío para mantener '{alumno[2]}'): "
+                )
+                or alumno[2],  # Si se deja vacío, mantiene el actual
+                "apellido",
+            )
+            telefono = validar_telefono(
+                input(
+                    f"Nuevo teléfono del alumno (dejar vacío para mantener '{alumno[3]}'): "
+                )
+                or alumno[3]  # Si se deja vacío, mantiene el actual
+            )
+            direccion = validar_direccion(
+                input(
+                    f"Nueva dirección del alumno (dejar vacío para mantener '{alumno[4]}'): "
+                )
+                or alumno[4]  # Si se deja vacío, mantiene el actual
+            )
+            dni = validar_dni(
+                input(
+                    f"Nuevo DNI del alumno (dejar vacío para mantener '{alumno[5]}'): "
+                )
+                or alumno[5]  # Si se deja vacío, mantiene el actual
+            )
+
+            # Realizar la actualización en la base de datos
+            query_update = """
+                UPDATE Alumnos 
+                SET Nombre=%s, Apellido=%s, Telefono=%s, Direccion=%s, DNI=%s 
+                WHERE Legajo=%s
+            """
+            cursor.execute(
+                query_update, (nombre, apellido, telefono, direccion, dni, legajo)
+            )
+            conn.commit()
+            print("Alumno actualizado correctamente.")
+        else:
+            # Si el legajo no existe, mostrar un error
+            error_rojo(f"Error: El legajo {legajo} no existe en la base de datos.")
+
     except Exception as e:
         error_rojo(f"Error al actualizar el alumno: {e}")
     finally:

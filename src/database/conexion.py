@@ -11,7 +11,7 @@ def obtener_configuracion():
         return {
             "host": os.getenv("DB_HOST", "localhost"),  # valor por defecto 'localhost'
             "user": os.getenv("DB_USER", "root"),  # valor por defecto 'root'
-            "password": os.getenv("DB_PASSWORD", "root"),  # valor por defecto 'root'
+            "password": os.getenv("DB_PASSWORD", ""),  # valor por defecto 'root'
             "database": os.getenv(
                 "DB_NAME", "DB_ACADEMIA"
             ),  # valor por defecto 'DB_ACADEMIA'
