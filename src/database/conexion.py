@@ -22,7 +22,7 @@ def obtener_configuracion():
                 "DB_USER", "root"
             ),  # Usuario de la base de datos, por defecto 'root'.
             "password": os.getenv(
-                "DB_PASSWORD", ""
+                "DB_PASSWORD", "root"
             ),  # Contraseña del usuario de la base de datos, por defecto vacía.
             "database": os.getenv(
                 "DB_NAME", "DB_ACADEMIA"
