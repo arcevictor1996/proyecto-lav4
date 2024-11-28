@@ -1,116 +1,148 @@
-from prettytable import PrettyTable
-from ..database.conexion import conectar
-from ..utils.utils import error_rojo
+from prettytable import (
+    PrettyTable,
+)  # Importamos la librería PrettyTable para crear tablas de texto formateadas
+from ..database.conexion import (
+    conectar,
+)  # Importamos la función conectar para la conexión a la base de datos
+from ..utils.utils import (
+    error_rojo,
+)  # Importamos la función error_rojo para mostrar mensajes de error en rojo
+
+# **Validaciones de los campos**
+# Estas funciones validan los datos que se ingresan para asegurar que tengan el formato correcto.
 
 
-# Validaciones para los datos
+# Función para validar el nombre
 def validar_nombre(campo, apellido):
-    while True:
+    while True:  # Bucle infinito hasta que el dato sea válido
         try:
-            # Permitir letras y espacios
+            # Verifica que todos los caracteres en el campo sean letras o espacios
             if not all(x.isalpha() or x.isspace() for x in campo):
                 raise ValueError(f"El {apellido} debe contener solo letras y espacios.")
-            return campo
+            return campo  # Si la validación es correcta, devuelve el campo
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            campo = input(f"Ingrese un {apellido} válido: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            campo = input(
+                f"Ingrese un {apellido} válido: "
+            )  # Solicita al usuario que ingrese un nuevo valor
 
 
+# Función similar para validar el apellido
 def validar_apellido(campo, apellido):
     while True:
         try:
-            # Permitir letras y espacios
+            # Verifica que todos los caracteres en el campo sean letras o espacios
             if not all(x.isalpha() or x.isspace() for x in campo):
                 raise ValueError(f"El {apellido} debe contener solo letras y espacios.")
-            return campo
+            return campo  # Si la validación es correcta, devuelve el campo
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            campo = input(f"Ingrese un {apellido} válido: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            campo = input(f"Ingrese un {apellido} válido: ")  # Solicita un nuevo valor
 
 
+# Función para validar el teléfono
 def validar_telefono(telefono):
     while True:
         try:
+            # Verifica que el teléfono esté compuesto solo de números
             if not telefono.isdigit():
                 raise ValueError("El teléfono debe contener solo números.")
-            return telefono
+            return telefono  # Si es válido, devuelve el teléfono
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            telefono = input("Ingrese un teléfono válido: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            telefono = input("Ingrese un teléfono válido: ")  # Solicita un nuevo valor
 
 
+# Función para validar el DNI
 def validar_dni(dni):
     while True:
         try:
+            # Verifica que el DNI tenga exactamente 8 dígitos
             if not dni.isdigit() or len(dni) != 8:
                 raise ValueError("El DNI debe ser un número de 8 dígitos.")
-            return dni
+            return dni  # Si es válido, devuelve el DNI
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            dni = input("Ingrese un DNI válido: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            dni = input("Ingrese un DNI válido: ")  # Solicita un nuevo valor
 
 
+# Función para validar la dirección
 def validar_direccion(direccion):
     while True:
         try:
+            # Verifica que la dirección no esté vacía
             if len(direccion.strip()) == 0:
                 raise ValueError("La dirección no puede estar vacía.")
-            return direccion
+            return direccion  # Si es válida, devuelve la dirección
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            direccion = input("Ingrese una dirección válida: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            direccion = input(
+                "Ingrese una dirección válida: "
+            )  # Solicita un nuevo valor
 
 
+# Función para validar el legajo
 def validar_legajo(legajo):
     while True:
         try:
+            # Verifica que el legajo sea un número positivo y que no tenga más de 3 dígitos
             if not legajo.isdigit() or len(legajo) < 1:
                 raise ValueError("El legajo debe ser un número positivo.")
-            if (
-                len(legajo) > 3
-            ):  # Aseguramos que el legajo tenga al menos 4 dígitos (si aplica en tu caso)
+            if len(legajo) > 3:  # Limita el legajo a un máximo de 3 dígitos
                 raise ValueError("El legajo debe hasta 3 dígitos.")
-            return legajo
+            return legajo  # Si es válido, devuelve el legajo
         except ValueError as e:
-            error_rojo(f"Error: {e}")
-            legajo = input("Ingrese un legajo válido: ")
+            error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
+            legajo = input("Ingrese un legajo válido: ")  # Solicita un nuevo valor
 
 
-# Función CRUD: Crear alumno
+# **Funciones CRUD (Crear, Leer, Actualizar, Eliminar alumnos)**
+# Estas funciones permiten gestionar los datos de los alumnos en la base de datos.
+
+
+# Función para crear un nuevo alumno en la base de datos
 def crear_alumno():
     try:
-        # Solicitar y validar datos
+        # Solicita los datos al usuario y los valida mediante las funciones anteriores
         nombre = validar_nombre(input("Ingrese nombre del alumno: "), "nombre")
         apellido = validar_apellido(input("Ingrese apellido del alumno: "), "apellido")
         telefono = validar_telefono(input("Ingrese teléfono del alumno: "))
         direccion = validar_direccion(input("Ingrese dirección del alumno: "))
         dni = validar_dni(input("Ingrese DNI del alumno: "))
 
-        # Conexión y ejecución de consulta
-        conn = conectar()
-        cursor = conn.cursor()
+        # Conexión a la base de datos
+        conn = conectar()  # Establece la conexión con la base de datos
+        cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
+
+        # Consulta SQL para insertar un nuevo alumno
         query = """
             INSERT INTO Alumnos (Nombre, Apellido, Telefono, Direccion, DNI) 
             VALUES (%s, %s, %s, %s, %s)
         """
-        cursor.execute(query, (nombre, apellido, telefono, direccion, dni))
-        conn.commit()
+        cursor.execute(
+            query, (nombre, apellido, telefono, direccion, dni)
+        )  # Ejecuta la consulta con los datos proporcionados
+        conn.commit()  # Guarda los cambios realizados en la base de datos
         print("Alumno creado correctamente.")
     except Exception as e:
-        error_rojo(f"Error al crear alumno: {e}")
+        error_rojo(
+            f"Error al crear alumno: {e}"
+        )  # Si ocurre un error, muestra el mensaje de error
     finally:
-        cursor.close()
-        conn.close()
+        cursor.close()  # Cierra el cursor
+        conn.close()  # Cierra la conexión a la base de datos
 
 
-# Leer alumnos
+# Función para leer todos los alumnos de la base de datos y mostrarlos en una tabla
 def leer_alumnos():
     try:
-        conn = conectar()
-        cursor = conn.cursor()
+        conn = conectar()  # Establece la conexión con la base de datos
+        cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
+
+        # Consulta SQL para obtener todos los alumnos
         query = "SELECT * FROM Alumnos"
-        cursor.execute(query)
-        alumnos = cursor.fetchall()
+        cursor.execute(query)  # Ejecuta la consulta
+        alumnos = cursor.fetchall()  # Obtiene todos los resultados
 
         # Crear la tabla con encabezados
         tabla = PrettyTable()
@@ -127,32 +159,36 @@ def leer_alumnos():
         for alumno in alumnos:
             tabla.add_row(alumno)
 
-        # Imprimir la tabla
+        # Imprimir la tabla con los alumnos
         print("\nListado de Alumnos:")
         print(tabla)
 
     except Exception as e:
-        error_rojo(f"Error al leer alumnos: {e}")
+        error_rojo(
+            f"Error al leer alumnos: {e}"
+        )  # Si ocurre un error, muestra el mensaje de error
     finally:
-        cursor.close()
-        conn.close()
+        cursor.close()  # Cierra el cursor
+        conn.close()  # Cierra la conexión a la base de datos
 
 
-# Función CRUD: Actualizar alumno
+# Función para actualizar los datos de un alumno existente
 def actualizar_alumno():
-    legajo = validar_legajo(input("Ingrese el legajo del alumno a modificar: "))
+    legajo = validar_legajo(
+        input("Ingrese el legajo del alumno a modificar: ")
+    )  # Solicita y valida el legajo
 
     try:
-        conn = conectar()
-        cursor = conn.cursor()
+        conn = conectar()  # Establece la conexión con la base de datos
+        cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
 
-        # Verificar si el legajo existe
+        # Consulta SQL para verificar si el legajo existe
         query = "SELECT * FROM Alumnos WHERE Legajo=%s"
         cursor.execute(query, (legajo,))
-        alumno = cursor.fetchone()
+        alumno = cursor.fetchone()  # Obtiene un solo alumno con el legajo dado
 
         if alumno:
-            # El legajo existe, mostrar los datos actuales
+            # Si el legajo existe, muestra los datos actuales del alumno
             print("\nDatos actuales del alumno:")
             print(f"Nombre: {alumno[1]}")
             print(f"Apellido: {alumno[2]}")
@@ -160,98 +196,106 @@ def actualizar_alumno():
             print(f"Dirección: {alumno[4]}")
             print(f"DNI: {alumno[5]}")
 
-            # Solicitar los nuevos datos o dejar en blanco para mantener los actuales
+            # Solicita los nuevos datos, permitiendo dejar en blanco para mantener los actuales
             nombre = validar_nombre(
                 input(
                     f"Nuevo nombre del alumno (dejar vacío para mantener '{alumno[1]}'): "
                 )
-                or alumno[1],  # Si se deja vacío, mantiene el actual
+                or alumno[1],
                 "nombre",
             )
             apellido = validar_apellido(
                 input(
                     f"Nuevo apellido del alumno (dejar vacío para mantener '{alumno[2]}'): "
                 )
-                or alumno[2],  # Si se deja vacío, mantiene el actual
+                or alumno[2],
                 "apellido",
             )
             telefono = validar_telefono(
                 input(
                     f"Nuevo teléfono del alumno (dejar vacío para mantener '{alumno[3]}'): "
                 )
-                or alumno[3]  # Si se deja vacío, mantiene el actual
+                or alumno[3]
             )
             direccion = validar_direccion(
                 input(
                     f"Nueva dirección del alumno (dejar vacío para mantener '{alumno[4]}'): "
                 )
-                or alumno[4]  # Si se deja vacío, mantiene el actual
+                or alumno[4]
             )
             dni = validar_dni(
                 input(
                     f"Nuevo DNI del alumno (dejar vacío para mantener '{alumno[5]}'): "
                 )
-                or alumno[5]  # Si se deja vacío, mantiene el actual
+                or alumno[5]
             )
 
-            # Realizar la actualización en la base de datos
-            query_update = """
-                UPDATE Alumnos 
-                SET Nombre=%s, Apellido=%s, Telefono=%s, Direccion=%s, DNI=%s 
+            # Consulta SQL para actualizar los datos del alumno
+            update_query = """
+                UPDATE Alumnos
+                SET Nombre=%s, Apellido=%s, Telefono=%s, Direccion=%s, DNI=%s
                 WHERE Legajo=%s
             """
             cursor.execute(
-                query_update, (nombre, apellido, telefono, direccion, dni, legajo)
-            )
-            conn.commit()
+                update_query, (nombre, apellido, telefono, direccion, dni, legajo)
+            )  # Ejecuta la consulta de actualización
+            conn.commit()  # Guarda los cambios realizados
             print("Alumno actualizado correctamente.")
+
         else:
-            # Si el legajo no existe, mostrar un error
-            error_rojo(f"Error: El legajo {legajo} no existe en la base de datos.")
+            print("Legajo no encontrado.")
 
     except Exception as e:
-        error_rojo(f"Error al actualizar el alumno: {e}")
+        error_rojo(
+            f"Error al actualizar alumno: {e}"
+        )  # Si ocurre un error, muestra el mensaje de error
     finally:
-        cursor.close()
-        conn.close()
+        cursor.close()  # Cierra el cursor
+        conn.close()  # Cierra la conexión a la base de datos
 
 
-# Eliminar alumno
+# Función para eliminar un alumno de la base de datos
 def eliminar_alumno():
-    legajo = validar_legajo(input("Ingrese el legajo del alumno a eliminar: "))
+    legajo = validar_legajo(
+        input("Ingrese el legajo del alumno a eliminar: ")
+    )  # Solicita y valida el legajo
 
     try:
-        conn = conectar()
-        cursor = conn.cursor()
+        conn = conectar()  # Establece la conexión con la base de datos
+        cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
+
+        # Consulta SQL para verificar si el legajo existe
         query = "SELECT * FROM Alumnos WHERE Legajo=%s"
         cursor.execute(query, (legajo,))
-        alumno = cursor.fetchone()
+        alumno = cursor.fetchone()  # Obtiene un solo alumno con el legajo dado
 
         if alumno:
-            print(
-                f"\nDatos del alumno a eliminar: Legajo: {alumno[0]}, Nombre: {alumno[1]}"
-            )
+            # Si el alumno existe, muestra sus datos
+            print("\nDatos del alumno a eliminar:")
+            print(f"Nombre: {alumno[1]}")
+            print(f"Apellido: {alumno[2]}")
+            print(f"Teléfono: {alumno[3]}")
+            print(f"Dirección: {alumno[4]}")
+            print(f"DNI: {alumno[5]}")
 
-            confirmar = (
-                input("¿Está seguro de que desea eliminar este alumno? (S/N): ")
-                .strip()
-                .upper()
-            )
-            if confirmar == "S":
-                query_delete = "DELETE FROM Alumnos WHERE Legajo=%s"
-                cursor.execute(query_delete, (legajo,))
-                conn.commit()
-
-                if cursor.rowcount == 0:
-                    print("No se encontró ningún alumno con el legajo proporcionado.")
-                else:
-                    print("Alumno eliminado correctamente.")
+            confirmacion = input("¿Está seguro de eliminar este alumno? (sí/no): ")
+            if confirmacion.lower() == "sí":
+                # Si el usuario confirma, elimina el alumno
+                delete_query = "DELETE FROM Alumnos WHERE Legajo=%s"
+                cursor.execute(
+                    delete_query, (legajo,)
+                )  # Ejecuta la consulta de eliminación
+                conn.commit()  # Guarda los cambios realizados
+                print("Alumno eliminado correctamente.")
             else:
-                print("Operación cancelada.")
+                print("Eliminación cancelada.")
         else:
-            print("No se encontró ningún alumno con el legajo proporcionado.")
+            print("Legajo no encontrado.")
+
     except Exception as e:
-        error_rojo(f"Error al eliminar el alumno: {e}")
+        error_rojo(
+            f"Error al eliminar alumno: {e}"
+        )  # Si ocurre un error, muestra el mensaje de error
     finally:
-        cursor.close()
-        conn.close()
+        cursor.close()  # Cierra el cursor
+        conn.close()  # Cierra la conexión a la base de datos
