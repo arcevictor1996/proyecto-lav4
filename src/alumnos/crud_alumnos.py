@@ -140,7 +140,7 @@ def leer_alumnos():
         cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
 
         # Consulta SQL para obtener todos los alumnos
-        query = "SELECT * FROM Alumnos"
+        query = "SELECT * FROM Alumnos ORDER BY Legajo" #oRDENADO POR LEGAJO
         cursor.execute(query)  # Ejecuta la consulta
         alumnos = cursor.fetchall()  # Obtiene todos los resultados
 

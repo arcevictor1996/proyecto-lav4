@@ -82,7 +82,7 @@ def crear_instructor():
     Crea un nuevo instructor en la base de datos.
     """
     # Solicita y valida el nombre del instructor
-    nombre = validar_nombre(input("Ingrese el nombre del instructor: ").strip())
+    nombre = validar_nombre(input("Ingrese el nombre y apellido del instructor: ").strip())
 
     # Solicita y valida el teléfono del instructor
     telefono = validar_telefono(input("Ingrese el teléfono del instructor: ").strip())
@@ -127,7 +127,8 @@ def leer_instructores():
         cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
 
         # Define la consulta SQL para obtener todos los instructores registrados
-        query = "SELECT * FROM Instructores"
+        query = "SELECT * FROM Instructores ORDER BY ID"#pidio el profe ordenamiento
+
 
         # Ejecuta la consulta
         cursor.execute(query)
