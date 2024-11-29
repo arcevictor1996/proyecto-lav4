@@ -1,12 +1,6 @@
-from prettytable import (
-    PrettyTable,
-)  # Importamos la librería PrettyTable para crear tablas de texto formateadas
-from ..database.conexion import (
-    conectar,
-)  # Importamos la función conectar para la conexión a la base de datos
-from ..utils.utils import (
-    error_rojo,
-)  # Importamos la función error_rojo para mostrar mensajes de error en rojo
+from prettytable import (PrettyTable,)  # Importamos la librería PrettyTable para crear tablas de texto formateadas
+from ..database.conexion import ( conectar,)  # Importamos la función conectar para la conexión a la base de datos
+from ..utils.utils import (error_rojo,)  # Importamos la función error_rojo para mostrar mensajes de error en rojo
 
 # **Validaciones de los campos**
 # Estas funciones validan los datos que se ingresan para asegurar que tengan el formato correcto.
@@ -58,8 +52,8 @@ def validar_dni(dni):
     while True:
         try:
             # Verifica que el DNI tenga exactamente 8 dígitos
-            if not dni.isdigit() or len(dni) != 8:
-                raise ValueError("El DNI debe ser un número de 8 dígitos.")
+            if not dni.isdigit() or len(dni) < 7:
+                raise ValueError("El DNI debe ser un número mayor de 7 dígitos.")
             return dni  # Si es válido, devuelve el DNI
         except ValueError as e:
             error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
