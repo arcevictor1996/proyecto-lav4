@@ -51,7 +51,7 @@ def validar_telefono(telefono):
 def validar_dni(dni):
     while True:
         try:
-            # Verifica que el DNI tenga exactamente 8 dígitos
+            # Verifica que el DNI tenga exactamente 7 dígitos
             if not dni.isdigit() or len(dni) < 7:
                 raise ValueError("El DNI debe ser un número mayor de 7 dígitos.")
             return dni  # Si es válido, devuelve el DNI
@@ -79,11 +79,11 @@ def validar_direccion(direccion):
 def validar_legajo(legajo):
     while True:
         try:
-            # Verifica que el legajo sea un número positivo y que no tenga más de 3 dígitos
+            # Verifica que el legajo sea un número positivo y que no tenga más de 5 dígitos
             if not legajo.isdigit() or len(legajo) < 1:
                 raise ValueError("El legajo debe ser un número positivo.")
-            if len(legajo) > 3:  # Limita el legajo a un máximo de 3 dígitos
-                raise ValueError("El legajo debe hasta 3 dígitos.")
+            if len(legajo) > 5:  # Limita el legajo a un máximo de 5 dígitos
+                raise ValueError("El legajo debe hasta 5 dígitos.")
             return legajo  # Si es válido, devuelve el legajo
         except ValueError as e:
             error_rojo(f"Error: {e}")  # Muestra el mensaje de error en rojo
@@ -134,7 +134,7 @@ def leer_alumnos():
         cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
 
         # Consulta SQL para obtener todos los alumnos
-        query = "SELECT * FROM Alumnos ORDER BY Legajo" #oRDENADO POR LEGAJO
+        query = "SELECT * FROM Alumnos ORDER BY Apellido" #oRDENADO POR LEGAJO
         cursor.execute(query)  # Ejecuta la consulta
         alumnos = cursor.fetchall()  # Obtiene todos los resultados
 
@@ -142,8 +142,8 @@ def leer_alumnos():
         tabla = PrettyTable()
         tabla.field_names = [
             "Legajo",
-            "Apellido",
             "Nombre",
+            "Apellido",
             "Teléfono",
             "Dirección",
             "DNI",

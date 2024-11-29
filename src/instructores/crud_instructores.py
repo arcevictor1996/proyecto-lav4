@@ -127,7 +127,7 @@ def leer_instructores():
         cursor = conn.cursor()  # Crea un cursor para ejecutar las consultas SQL
 
         # Define la consulta SQL para obtener todos los instructores registrados
-        query = "SELECT * FROM Instructores ORDER BY ID"#pidio el profe ordenamiento
+        query = "SELECT * FROM Instructores ORDER BY idInstructores" #pidio el profe ordenamiento
 
 
         # Ejecuta la consulta

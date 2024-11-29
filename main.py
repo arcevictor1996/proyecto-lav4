@@ -56,10 +56,12 @@ def menu_principal():
             if confirmar == "s":  # Si la respuesta es 's', sale del sistema
                 print("\033[1;31mSaliendo del sistema...\033[0m")  # Mensaje en rojo
                 break  # Termina el bucle y sale
-            else:  # Si la respuesta no es 's', regresa al menú principal
+            elif confirmar == "n": # Si la respuesta no es 's', regresa al menú principal
                 print(
                     "\033[1;32mRegresando al menú principal...\033[0m"
                 )  # Mensaje en verde
+            else:
+                error_rojo("Ingrese s o n")    
         else:
             # Si la opción no es válida, muestra un mensaje de error
             print(

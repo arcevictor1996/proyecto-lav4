@@ -228,7 +228,7 @@ def leer_cursos():
         conn = conectar()
         cursor = conn.cursor()
         # Consulta para obtener todos los cursos registrados
-        query = "SELECT * FROM Cursos ORDER BY Código" #ACA lo que pidio el profe ORDENADO POR CODIGO
+        query = "SELECT * FROM Cursos ORDER BY Codigo" #ACA lo que pidio el profe ORDENADO POR CODIGO
         cursor.execute(query)
         cursos = cursor.fetchall()  # Recuperar todos los resultados de la consulta
 
