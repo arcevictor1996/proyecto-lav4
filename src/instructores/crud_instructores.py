@@ -169,6 +169,7 @@ def actualizar_instructor():
     """
     Actualiza los datos de un instructor existente en la base de datos.
     """
+    leer_instructores()
     # Solicita el ID del instructor que se desea modificar
     id_instructor = int(input("Ingrese el ID del instructor a modificar: ").strip())
 

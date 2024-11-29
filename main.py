@@ -48,20 +48,23 @@ def menu_principal():
             limpiar_pantalla()  # Limpia la pantalla después de salir del menú de cursos
         elif opcion == "4":
             # Confirma si el usuario realmente desea salir
-            confirmar = (
-                input("\033[1;31m¿Está seguro de que desea salir? (s/n): \033[0m")
-                .strip()  # Elimina espacios antes y después de la entrada
-                .lower()  # Convierte la entrada a minúsculas
-            )
-            if confirmar == "s":  # Si la respuesta es 's', sale del sistema
-                print("\033[1;31mSaliendo del sistema...\033[0m")  # Mensaje en rojo
-                break  # Termina el bucle y sale
-            elif confirmar == "n": # Si la respuesta no es 's', regresa al menú principal
-                print(
-                    "\033[1;32mRegresando al menú principal...\033[0m"
-                )  # Mensaje en verde
-            else:
-                error_rojo("Ingrese s o n")    
+            while True:
+                confirmar = (
+                    input("\033[1;31m¿Está seguro de que desea salir? (s/n): \033[0m")
+                    .strip()  # Elimina espacios antes y después de la entrada
+                    .lower()  # Convierte la entrada a minúsculas
+                )
+                if confirmar == "s":  # Si la respuesta es 's', sale del sistema
+                    print("\033[1;31mSaliendo del sistema...\033[0m")  # Mensaje en rojo
+                    input("\nPresione Enter para salir...")  # Pausa antes de cerrar
+                    break  # Termina el bucle y sale
+                elif confirmar == "n":  # Si la respuesta no es 's', regresa al menú principal
+                    print(
+                        "\033[1;32mRegresando al menú principal...\033[0m"
+                    )  # Mensaje en verde
+                    break
+                else:
+                    error_rojo("Ingrese s o n")  # Mensaje de error
         else:
             # Si la opción no es válida, muestra un mensaje de error
             print(

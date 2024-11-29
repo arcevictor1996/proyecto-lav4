@@ -168,6 +168,7 @@ def leer_alumnos():
 
 # Función para actualizar los datos de un alumno existente
 def actualizar_alumno():
+    leer_alumnos()
     legajo = validar_legajo(
         input("Ingrese el legajo del alumno a modificar: ")
     )  # Solicita y valida el legajo
